@@ -59,10 +59,6 @@ VOID DrawArrow( HDC hDC, INT Xc, INT Yc, INT L, INT W, FLOAT Angle )
     pts_draw[i].x = Xc + (pts[i].x * co - pts[i].y * si);
     pts_draw[i].y = Yc - (pts[i].x * si + pts[i].y * co);
   }
-  //SelectObject(hDC, GetStockObject(DC_BRUSH));
-  //SelectObject(hDC, GetStockObject(DC_PEN));
-  //SetDCPenColor(hDC, RGB(0, 0, 0));
-  //SetDCBrushColor(hDC, RGB(255, 255, 255));
   Polygon(hDC, pts_draw, sizeof pts / sizeof pts[0]);
 } /* End of 'DrawArrow' function */
 
@@ -141,30 +137,31 @@ LRESULT CALLBACK WindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     hDC = BeginPaint(hWnd, &ps);
     hMemDC = CreateCompatibleDC(hDC);
     hMemDCLogo = CreateCompatibleDC(hDC);
+    SelectObject(hMemDCLogo, hBmLogo); 
     SelectObject(hMemDC, hBm);
-    SelectObject(hMemDCLogo, hBmLogo);
    
     GetLocalTime(&st);
     GetObject(hBmLogo, sizeof(bm), &bm);
     
-    BitBlt(hMemDC, 0, 0, bm.bmWidth, bm.bmHeight, hMemDCLogo, 0, 0, SRCCOPY);
-    BitBlt(hDC, 0, 0, W, H, hMemDC, 0, 0, SRCCOPY);
+    BitBlt(hMemDC, 0,0, bm.bmWidth, bm.bmHeight, hMemDCLogo, 0, 0, SRCCOPY);
     
-    SelectObject(hDC, GetStockObject(DC_BRUSH));
-    SelectObject(hDC, GetStockObject(DC_PEN));
-    SetDCPenColor(hDC, RGB(0, 0, 0));
-    SetDCBrushColor(hDC, RGB(0, 0, 255));
-    DrawArrow(hDC, 300, 300 , 100, 50, (-(st.wHour % 12 + st.wMinute / 60.0) / 12.0) * 2 * PI);
-    SelectObject(hDC, GetStockObject(DC_BRUSH));
-    SetDCBrushColor(hDC, RGB(0, 255, 0));
-    DrawArrow(hDC, 300, 300, 140, 45, (-(st.wMinute + st.wSecond / 60.0) / 60.0) * 2 * PI);
-    SelectObject(hDC, GetStockObject(DC_BRUSH));
-    SetDCBrushColor(hDC, RGB(255, 0, 0));
-    DrawArrow(hDC, 300, 300, 200, 30, (-(st.wSecond + st.wMilliseconds / 1000.0) / 60.0) * 2 * PI);
+    SelectObject(hMemDC, GetStockObject(DC_BRUSH));
+    SelectObject(hMemDC, GetStockObject(DC_PEN));
+    SetDCPenColor(hMemDC, RGB(0, 0, 0));
+    SetDCBrushColor(hMemDC, RGB(0, 0, 255));
+    DrawArrow(hMemDC, 300, 300 , 100, 50, (-(st.wHour % 12 + st.wMinute / 60.0) / 12.0) * 2 * PI);
+    SelectObject(hMemDC, GetStockObject(DC_BRUSH));
+    SetDCBrushColor(hMemDC, RGB(0, 255, 0));
+    DrawArrow(hMemDC, 300, 300, 140, 45, (-(st.wMinute + st.wSecond / 60.0) / 60.0) * 2 * PI);
+    SelectObject(hMemDC, GetStockObject(DC_BRUSH));
+    SetDCBrushColor(hMemDC, RGB(255, 0, 0));
+    DrawArrow(hMemDC, 300, 300, 200, 30, (-(st.wSecond + st.wMilliseconds / 1000.0) / 60.0) * 2 * PI);
     //DrawArrow(hDC, 300, 300, 250, 20, (-st.wMilliseconds / 1000.0) * 2 * PI);
-    SelectObject(hDC, GetStockObject(DC_BRUSH));
-    SetDCBrushColor(hDC, RGB(0, 0, 0));
-    Ellipse(hDC, 300 - r, 300 - r, 300 + r, 300 + r);
+    SelectObject(hMemDC, GetStockObject(DC_BRUSH));
+    SetDCBrushColor(hMemDC, RGB(0, 0, 0));
+    Ellipse(hMemDC, 300 - r, 300 - r, 300 + r, 300 + r);
+    
+    BitBlt(hDC, 0, 0, W, H, hMemDC, 0, 0, SRCCOPY);
     
     DeleteDC(hMemDCLogo);
     DeleteDC(hMemDC);
