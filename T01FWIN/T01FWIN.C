@@ -7,21 +7,43 @@
 
 #define WND_CLASS_NAME "My window class"
 #define r0 ((float)rand() / RAND_MAX)
-#define SQT(x) ( x * x )
 
 LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wPAram, LPARAM lParam );
 /*Xc, Yc - center of eye, XX, YY - the position of mouse */
-void DrawEye( HDC hDC, INT Xc, INT Yc, INT XX, INT YY, INT W, INT H )
+void DrawEye( HDC hDC, FLOAT Xc, FLOAT Yc, FLOAT XX, FLOAT YY, FLOAT W, FLOAT H )
 {
-  FLOAT r = 20, l, cos, sin, xe, ye, ratio = W / H;
+  FLOAT r = 20, l, co, si, xe, ye, ratio = W / H;
 
-  Ellipse( hDC, Xc - W / 4, 0, Xc + W / 4, H );
-  l = sqrt(SQT(XX - Xc) + SQT(YY - Yc));
-  cos = (XX - Xc) / l;
-  sin = (YY - Yc) / l;
-  xe = l * cos;
-  ye = l * sin * ratio;
-  Ellipse(hDC, xe - r, ye - r, xe + r, ye + r);  
+  SelectObject(hDC, GetStockObject(DC_PEN));
+  SelectObject(hDC, GetStockObject(DC_BRUSH));
+  SetDCBrushColor(hDC, RGB(255, 255, 255));
+  SetDCPenColor(hDC, RGB(0, 0, 0));
+  Ellipse( hDC, Xc - W / 4, H / 5, Xc + W / 4,  H * 4 / 5 );
+  l = sqrt((XX - Xc) * (XX - Xc) + (YY - Yc) * (YY - Yc));
+  if (l == 0)
+  {
+    co = 0;
+    si = 0;
+  }
+  else
+  {
+    co = (XX - Xc )/ l;
+    si = (YY - Yc )/ l;
+  }
+  if (l > W / 4 - r)
+  {
+    l = W / 4 - r;
+    xe = co * l + l;
+    ye = si * l + l + H / 5;
+  }
+  else
+  {
+    xe = XX;
+    ye = YY;
+  }
+  SelectObject(hDC, GetStockObject(DC_BRUSH));
+  SetDCBrushColor(hDC, RGB(0, 0, 0));
+  Ellipse(hDC, xe , ye , xe + 2 * r, ye + 2 * r);  
 }                                                    
 INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine, INT ShowCmd )
 {
@@ -93,14 +115,9 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
     GetClientRect(hWnd, &rc);
     GetCursorPos(&pt);
     ScreenToClient(hWnd, &pt);
-    SelectObject(hDC, GetStockObject(DC_PEN));
-    SelectObject(hDC, GetStockObject(DC_BRUSH));
-    /*SetDCBrushColor(hDC, RGB(0, 0, 0));
     DrawEye(hDC, rc.right / 4, rc.bottom / 2, pt.x , pt.y , rc.right , rc.bottom);
-    DrawEye(hDC, rc.right * 3 / 4, rc.bottom / 2, pt.x , pt.y , rc.right , rc.bottom);    
-    SetDCPenColor(hDC, RGB(0, 0, 0));
-    DrawEye(hDC, rc.right / 4, rc.bottom / 2, pt.x , pt.y , rc.right , rc.bottom);    
-    EndPaint(hWnd, &ps);*/
+   // DrawEye(hDC, rc.right * 3 / 4, rc.bottom / 2, pt.x , pt.y , rc.right , rc.bottom);    
+    EndPaint(hWnd, &ps);                                                               
     return 0;
   }
   return DefWindowProc( hWnd, Msg, wParam, lParam);
