@@ -18,7 +18,7 @@ void DrawEye( HDC hDC, FLOAT Xc, FLOAT Yc, FLOAT XX, FLOAT YY, FLOAT W, FLOAT H 
   SelectObject(hDC, GetStockObject(DC_BRUSH));
   SetDCBrushColor(hDC, RGB(255, 255, 255));
   SetDCPenColor(hDC, RGB(0, 0, 0));
-  Ellipse( hDC, Xc - W / 4, H / 5, Xc + W / 4,  H * 4 / 5 );
+  Ellipse( hDC, Xc - W / 2, Yc - H / 2, Xc + W / 2, Yc + H / 2 );
   l = sqrt((XX - Xc) * (XX - Xc) + (YY - Yc) * (YY - Yc));
   if (l == 0)
   {
@@ -30,11 +30,11 @@ void DrawEye( HDC hDC, FLOAT Xc, FLOAT Yc, FLOAT XX, FLOAT YY, FLOAT W, FLOAT H 
     co = (XX - Xc )/ l;
     si = (YY - Yc )/ l;
   }
-  if (l > W / 4 - r)
+  if (l > W / 2 - r)
   {
-    l = W / 4 - r;
-    xe = co * l + l;
-    ye = si * l + l + H / 5;
+    l = W / 2 - r;
+    xe = co * l + l + Xc - W / 2 + r;
+    ye = si * l + l + Yc - H / 2 + r;
   }
   else
   {
@@ -43,7 +43,7 @@ void DrawEye( HDC hDC, FLOAT Xc, FLOAT Yc, FLOAT XX, FLOAT YY, FLOAT W, FLOAT H 
   }
   SelectObject(hDC, GetStockObject(DC_BRUSH));
   SetDCBrushColor(hDC, RGB(0, 0, 0));
-  Ellipse(hDC, xe , ye , xe + 2 * r, ye + 2 * r);  
+  Ellipse(hDC, xe - r , ye - r , xe + r, ye + r);  
 }                                                    
 INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine, INT ShowCmd )
 {
@@ -115,8 +115,8 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam
     GetClientRect(hWnd, &rc);
     GetCursorPos(&pt);
     ScreenToClient(hWnd, &pt);
-    DrawEye(hDC, rc.right / 4, rc.bottom / 2, pt.x , pt.y , rc.right , rc.bottom);
-   // DrawEye(hDC, rc.right * 3 / 4, rc.bottom / 2, pt.x , pt.y , rc.right , rc.bottom);    
+    DrawEye(hDC, 400, 500, pt.x, pt.y, 300, 300);
+    DrawEye(hDC, 800, 500, pt.x, pt.y, 300, 300);    
     EndPaint(hWnd, &ps);                                                               
     return 0;
   }
