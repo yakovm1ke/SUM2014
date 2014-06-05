@@ -12,7 +12,6 @@ double GlobalDeterminant = 0;
 int P[MAX], Parity = 0;
 int N;
 
-
 void Write( void )
 {
   int i;
@@ -79,7 +78,28 @@ void Load( char *FileName )
     for (j = 0; j < N; j++)
       fscanf(F, "%lf", &A[i][j]);
 }
+/*
+{
+  INT maxi = i, maxj = i, ki, kj;
+  for (ki = i + 1; ki < N; ki++)
+    for(kj = i + 1 ; kj < N; kj++)
+      if (A[ki][kj] > A[maxi][maxj])
+        maxi = ki, maxj = kj;  
+}
+if(i != maxi)
+  for(kj = 0; kj < N; kj++)
+    Swap( &A[i][kj], &A[maxi][kj]);
+  sign = -sign;
+if(j != maxj)
+  for(ki = 0; ki < N; ki++)
+   Swap( &A[ki][j], &A[ki][maxj]);
+  sign = -sign;
 
+
+for(k = i + 1; k < N; k++)
+  for(j = i + 1; j < N; j++)
+    A[k][j] -= A[i][j] * A[k][i] / A[i][i];
+*/
 INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine, INT ShowCmd )
 {
   int i;
