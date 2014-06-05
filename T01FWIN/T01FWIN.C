@@ -8,11 +8,48 @@
 #define WND_CLASS_NAME "My window class"
 #define r0 ((float)rand() / RAND_MAX)
 
+VOID FlipFullScreen( HWND hWnd )
+{
+  static BOOL IsFullScreen = FALSE; /* текущий режим */
+  static RECT SaveRC;               /* сохраненный размер */
+
+  if (!IsFullScreen)
+  {
+    RECT rc;
+
+    /* сохраняем старый размер окна */
+    GetWindowRect(hWnd, &SaveRC);
+
+    /* переходим в полный экран */
+    rc.left = 0;
+    rc.top = 0;
+    rc.right = GetSystemMetrics(SM_CXSCREEN);
+    rc.bottom = GetSystemMetrics(SM_CYSCREEN);
+
+    AdjustWindowRect(&rc, GetWindowLong(hWnd, GWL_STYLE), FALSE);
+
+    SetWindowPos(hWnd, HWND_TOP,
+      rc.left, rc.top,
+      rc.right - rc.left, rc.bottom - rc.top,
+      SWP_NOOWNERZORDER);
+    IsFullScreen = TRUE;
+  }
+  else
+  {
+    /* восстанавливаем размер окна */
+    SetWindowPos(hWnd, HWND_TOPMOST,
+      SaveRC.left, SaveRC.top,
+      SaveRC.right - SaveRC.left, SaveRC.bottom - SaveRC.top,
+      SWP_NOOWNERZORDER);
+    IsFullScreen = FALSE;
+  }
+} /* End of 'FlipFullScreen' function */
+
 LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wPAram, LPARAM lParam );
 /*Xc, Yc - center of eye, XX, YY - the position of mouse */
 void DrawEye( HDC hDC, FLOAT Xc, FLOAT Yc, FLOAT XX, FLOAT YY, FLOAT W, FLOAT H )
 {
-  FLOAT r = 20, l, co, si, xe, ye, ratio = W / H;
+  FLOAT r = 20, l, co, si, xe, ye;
 
   SelectObject(hDC, GetStockObject(DC_PEN));
   SelectObject(hDC, GetStockObject(DC_BRUSH));
@@ -88,35 +125,64 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine,
 
 LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam )
 {
-  HDC hDC;
+  HDC hDC, hMemDC;      //hMemDC - *
+  static HBITMAP hBm;   //*
+  BITMAP bm;            //*
   PAINTSTRUCT ps;
   RECT rc;
   POINT pt;
+  static INT W = 0, H = 0;
 
   switch(Msg)
   {
-  case WM_TIMER :
-    InvalidateRect(hWnd, NULL, TRUE);
+  //*************
+  case WM_SIZE:
+    W = LOWORD(lParam);
+    H = HIWORD(lParam);
+    hDC = GetDC(hWnd);
+    if (hBm != NULL)
+      DeleteObject(hBm);
+    hBm = CreateCompatibleBitmap(hDC, W, H);
+    ReleaseDC(hWnd, hDC);
     return 0;
+  //*****************
+  case WM_TIMER :
+    InvalidateRect( hWnd, NULL, TRUE );
+    return 0;
+  //****************
+  case WM_ERASEBKGND:
+    return 1;
+  //******************
   case WM_CREATE :
     SetTimer( hWnd, 30, 10, NULL );
     return 0;
   case WM_CHAR :
-    if((CHAR)wParam == 27)
-      DestroyWindow(hWnd);
+    if ((CHAR)wParam == 27)
+      DestroyWindow( hWnd );
+    if ((CHAR)wParam =='F' || 'f')
+      FlipFullScreen( hWnd );
     return 0;
   case WM_DESTROY:
-    KillTimer( hWnd, 30);
+    DeleteObject( hBm );  //*
+    KillTimer( hWnd, 30 );
     PostQuitMessage(0);
     return 0;
   case WM_PAINT:
     hDC = BeginPaint( hWnd, &ps );
+    hMemDC = CreateCompatibleDC(hDC); //*
+    SelectObject(hMemDC, hBm); //*
 
     GetClientRect(hWnd, &rc);
     GetCursorPos(&pt);
     ScreenToClient(hWnd, &pt);
-    DrawEye(hDC, 400, 500, pt.x, pt.y, 300, 300);
-    DrawEye(hDC, 800, 500, pt.x, pt.y, 300, 300);    
+
+    Rectangle(hMemDC, 0, 0, W, H);
+
+    DrawEye(hMemDC, 400, 500, pt.x, pt.y, 300, 300);   //*
+    DrawEye(hMemDC, 800, 500, pt.x, pt.y, 300, 300);   //* 
+
+    BitBlt(hDC, 0, 0, W, H, hMemDC, 0, 0, SRCCOPY); //*
+    DeleteDC(hMemDC); //*
     EndPaint(hWnd, &ps);                                                               
     return 0;
   }
