@@ -1,9 +1,12 @@
-/*MY6, 05.06.2014*/
+/* FILENAME: DEF.H
+ * PROGRAMMER: MY6
+ * PURPOSE: Globe Application
+ * LAST UPDATE: 06.06.2014
+ */
 
 #include <stdlib.h>
 #include <math.h>
-
-#include <windows.h>
+#include "def.h"
 
 #define PI 3.14159265358979323846
 #define WND_CLASS_NAME "My window class"
@@ -14,7 +17,7 @@ VOID DrawGlobe( HDC hDC, INT Xc, INT Yc, DOUBLE t)
 {
   DOUBLE Theta, Phi;
   INT x, y, z;
-  DOUBLE r = 400;
+  DOUBLE r = 400 ;
 
   for (Phi = 0; Phi < 2 * PI; Phi += 0.07) 
     for (Theta = 0; Theta <  PI; Theta += 0.07)
@@ -91,8 +94,8 @@ LRESULT CALLBACK WindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     if ((CHAR)wParam == 27)
         DestroyWindow(hWnd);
     return 0;
-  case WM_PAINT:
-    hDC = BeginPaint(hWnd, &ps);
+  case WM_TIMER:
+    hDC = GetDC(hWnd);
     hMemDC = CreateCompatibleDC(hDC);
     SelectObject(hMemDC, hBm);
    
@@ -110,9 +113,6 @@ LRESULT CALLBACK WindowFunc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     BitBlt(hDC, 0, 0, W, H, hMemDC, 0, 0, SRCCOPY);
     DeleteDC(hMemDC);
     EndPaint(hWnd, &ps);
-    return 0;
-  case WM_TIMER:
-    InvalidateRect(hWnd, NULL, 0);
     return 0;
   case WM_DESTROY:
     DeleteObject(hBm);

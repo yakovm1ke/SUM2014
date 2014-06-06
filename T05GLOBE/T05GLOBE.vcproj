@@ -179,7 +179,27 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\DEF.H"
+				>
+			</File>
+			<File
+				RelativePath=".\IMAGE.C"
+				>
+			</File>
+			<File
+				RelativePath=".\IMAGE.H"
+				>
+			</File>
+			<File
 				RelativePath=".\T05GLOBE.C"
+				>
+			</File>
+			<File
+				RelativePath=".\VEC.C"
+				>
+			</File>
+			<File
+				RelativePath=".\VEC.H"
 				>
 			</File>
 		</Filter>
