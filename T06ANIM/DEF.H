@@ -9,7 +9,11 @@
 
 #pragma warning(disable: 4244 4305)
 
+
 #include <windows.h>
+#include <mmsystem.h>
+
+#pragma comment(lib, "winmm")
 
 /* Large integer data types */
 typedef __int64 INT64;

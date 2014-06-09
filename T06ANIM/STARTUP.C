@@ -69,7 +69,6 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
   UpdateWindow(hWnd);
 
   /*** Добавление объектов ***/
-  //for (i = 0; i < 30 * 30; i++)
   MY6_AnimAddUnit(MY6_ClockUnitCreate());
   MY6_AnimAddUnit(MY6_InfoUnitCreate());
 

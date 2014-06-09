@@ -23,13 +23,14 @@ BOOL ImageLoad( IMAGE *Img, CHAR *FileName )
     return FALSE;
   Img->W = Img->H = 0;
   Img->hBm = NULL;
+  Img->hDC = NULL;
   Img->Bits = NULL;
   if ((hBmLoad = LoadImage(NULL, FileName,
          IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE)) != NULL)
   {
     BITMAP bm;
     BITMAPINFOHEADER bmi;
-    HDC hDC, hMemDC1, hMemDC2;
+    HDC hDC, hMemDC;
 
     GetObject(hBmLoad, sizeof(bm), &bm);
     Img->W = bm.bmWidth;
@@ -50,15 +51,14 @@ BOOL ImageLoad( IMAGE *Img, CHAR *FileName )
       (VOID **)&Img->Bits, NULL, 0);
 
     hDC = GetDC(NULL);
-    hMemDC1 = CreateCompatibleDC(hDC);
-    hMemDC2 = CreateCompatibleDC(hDC);
+    hMemDC = CreateCompatibleDC(hDC);
+    Img->hDC = CreateCompatibleDC(hDC);
 
-    SelectObject(hMemDC1, hBmLoad);
-    SelectObject(hMemDC2, Img->hBm);
-    BitBlt(hMemDC2, 0, 0, Img->W, Img->H, hMemDC1, 0, 0, SRCCOPY);
+    SelectObject(hMemDC, hBmLoad);
+    SelectObject(Img->hDC, Img->hBm);
+    BitBlt(Img->hDC, 0, 0, Img->W, Img->H, hMemDC, 0, 0, SRCCOPY);
 
-    DeleteDC(hMemDC1);
-    DeleteDC(hMemDC2);
+    DeleteDC(hMemDC);
     ReleaseDC(NULL, hDC);
     DeleteObject(hBmLoad);
   }
@@ -78,8 +78,10 @@ VOID ImageFree( IMAGE *Img )
     return;
   if (Img->hBm != NULL)
     DeleteObject(Img->hBm);
+  DeleteDC(Img->hDC);
   Img->W = Img->H = 0;
   Img->hBm = NULL;
+  Img->hDC = NULL;
   Img->Bits = NULL;
 } /* End of 'ImageFree' function */
 
@@ -89,19 +91,7 @@ VOID ImageFree( IMAGE *Img )
  *       IMAGE *Img;
  * ÂÎÇÂÐÀÙÀÅÌÎÅ ÇÍÀ×ÅÍÈÅ: Íåò.
  */
-VOID ImageDraw( IMAGE *Img, HDC hDC, INT X, INT Y, INT LogOp )
-{
-  HDC hDCScr, hMemDC;
-  
-  if (Img == NULL)
-    return;
-  hDCScr = GetDC(NULL);
-  hMemDC = CreateCompatibleDC(hDCScr);
-  SelectObject(hMemDC, Img->hBm);
-  ReleaseDC(NULL, hMemDC);                                                                 
-  BitBlt( hMemDC, 0, 0, X, Y, hDCSrc, 0, 0, SRCCOPY );                                       
-} /* End of 'ImageDraw' function */                                                        
-                                                                                           
+
 /* Ôóíêöèÿ ïîëó÷åíèÿ öâåòà òî÷êè èçîáðàæåíèÿ.
  * ÀÐÃÓÌÅÍÒÛ:
  *   - óêàçàòåëü íà îáðàáàòûâàåìóþ êàðòèíêó:
@@ -130,5 +120,13 @@ DWORD ImageGetP( IMAGE *Img, INT X, INT Y )
   }
   return 0;
 } /* End of 'ImageGetP' function */
+
+VOID ImageDraw( IMAGE *Img, HDC hDC, INT X, INT Y, INT LogOp )
+{
+  if (Img == NULL)
+    return;
+  BitBlt( hDC, X, Y, Img->W, Img->H,Img->hDC, 0, 0, LogOp);
+}/* End of 'ImageDraw' function */
+
 
 /* END OF 'IMAGE.C' FILE */

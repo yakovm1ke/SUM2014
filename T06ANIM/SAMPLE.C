@@ -96,44 +96,6 @@ my6UNIT * MY6_CowUnitCreate( VOID )
   Unit->Type = rand() % 2;
   return (my6UNIT *)Unit;
 } /* End of 'MY6_CowUnitCreate' function */
-
 /***********************************************************/
-
-/* Функция построения информационного объекта анимации.
- * АРГУМЕНТЫ:
- *   - указатель на "себя" - сам объект анимации:
- *       my6UNIT *Unit;
- *   - указатель на контекст анимации:
- *       my6ANIM *Ani;
- * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
- */
-static VOID InfoUnitRender( my6UNIT *Unit, my6ANIM *Ani )
-{
-  static CHAR Buf[1000];
-  HDC hMemDCLogo;
-
-  
-  SetBkMode(Ani->hDC, TRANSPARENT);
-  SetTextColor(Ani->hDC, RGB(255, 255, 155));
-  TextOut(Ani->hDC, 1100, 150, Buf, sprintf(Buf, "FPS: %.3f", Ani->FPS));
-  ImageDraw("logo_and.bmp" ,Ani->hDC, 300, 300, SCRAND );
-  ImageDraw("logo_xor.bmp" ,Ani->hDC, 300, 300, SCRINVERT );
-} /* End of 'MY6_AnimUnitRender' function */
-
-/* Функция создания информационного объекта анимации.
- * АРГУМЕНТЫ: Нет.
- * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ:
- *   (my6UNIT *) указатель на созданный объект анимации.
- */
-my6UNIT * MY6_InfoUnitCreate( VOID )
-{
-  my6UNIT *Unit;
-
-  if ((Unit = MY6_AnimUnitCreate(sizeof(my6UNIT))) == NULL)
-    return NULL;
-  /* заполняем поля по-умолчанию */
-  Unit->Render = (VOID *)InfoUnitRender;
-  return Unit;
-} /* End of 'MY6_InfoUnitCreate' function */
-
+//Files in Clock.c beetween /***/
 /* END OF 'SAMPLE.C' FILE */

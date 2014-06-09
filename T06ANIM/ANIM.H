@@ -39,6 +39,8 @@ typedef struct tagmy6ANIM
 
   /* Подсистема ввода */
   BYTE Keys[256];     /* Сотояние клавиш клавиатуры и мыши */
+  BYTE JButs[32], JButsClick[32], JButsOld[32];
+  DBL JX, JY, JZ, JU, JR, JPOV;
 } my6ANIM;
 
 /* Базовые поля объекта анимации:
@@ -101,6 +103,8 @@ VOID MY6_AnimAddUnit( my6UNIT *Unit );
 
 /* Функция создания объекта анимации */
 my6UNIT * MY6_AnimUnitCreate( INT Size );
+
+VOID MY6_AnimResponse( VOID );
 
 #endif /* __ANIM_H_ */
 

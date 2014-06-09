@@ -71,7 +71,6 @@ VOID DrawArrow( HDC hDC, INT Xc, INT Yc, INT L, INT W, FLOAT Angle )
   }
   Polygon(hDC, pts_draw, sizeof pts / sizeof pts[0]);
 } /* End of 'DrawArrow' function */
-
 /* Функция построения объекта анимации.
  * АРГУМЕНТЫ:
  *   - указатель на "себя" - сам объект анимации:
@@ -123,8 +122,18 @@ my6UNIT * MY6_ClockUnitCreate( VOID )
   Unit->Type = rand() % 2;
   return (my6UNIT *)Unit;
 } /* End of 'MY6_CowUnitCreate' function */
+/*********************************************************/
+typedef struct tagmy6UNIT_INFO
+{
+  MY6_UNIT_BASE_FIELDS;
+  IMAGE And, Xor;
+}my6UNIT_INFO;
 
-/***********************************************************/
+static VOID InfoUnitInit( my6UNIT_INFO *Unit, my6ANIM *Ani )
+{
+  ImageLoad(&Unit->And, "logo_and.bmp");
+  ImageLoad(&Unit->Xor, "logo_xor.bmp");
+}/*End of 'InfoUnitInit' function "*/
 
 /* Функция построения информационного объекта анимации.
  * АРГУМЕНТЫ:
@@ -134,19 +143,44 @@ my6UNIT * MY6_ClockUnitCreate( VOID )
  *       my6ANIM *Ani;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
-static VOID InfoUnitRender( my6UNIT *Unit, my6ANIM *Ani )
+static VOID InfoUnitRender( my6UNIT_INFO *Unit, my6ANIM *Ani )
 {
   static CHAR Buf[1000];
+  static INT cx = 500, cy = 500;
 
   SetBkMode(Ani->hDC, TRANSPARENT);
   SetTextColor(Ani->hDC, RGB(255, 255, 155));
-  TextOut(Ani->hDC, 1100, 150, Buf, sprintf(Buf, "FPS: %.3f", Ani->FPS));
-} /* End of 'MY6_AnimUnitRender' function */
+  TextOut(Ani->hDC, 30, 30, Buf, sprintf(Buf, "FPS: %.3f, JR: %f, JX: %f, JY: %f, JZ: %f", Ani->FPS, Ani->JR, Ani->JX, Ani->JY, Ani->JZ));
 
+  cx += Ani->JR * 20;
+  cy += Ani->JZ * 20;
+  if (cx > 1500)
+    cx = - 300;
+  if (cx < - 300)
+    cx = 1500;
+  if (cy > 1200)
+    cy = - 300;
+  if (cy < - 300)
+    cy = 1200;
+  ImageDraw(&Unit->And, Ani->hDC,cx, cy, SRCAND );
+  ImageDraw(&Unit->Xor, Ani->hDC,cx, cy, SRCINVERT );
+} /* End of 'MY6_AnimUnitRender' function */
 /* Функция создания информационного объекта анимации.
  * АРГУМЕНТЫ: Нет.
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ:
  *   (my6UNIT *) указатель на созданный объект анимации.
  */
+my6UNIT * MY6_InfoUnitCreate( VOID )
+{
+  my6UNIT *Unit;
 
+  if ((Unit = (my6UNIT_INFO *)MY6_AnimUnitCreate(sizeof(my6UNIT_INFO))) == NULL)
+    return NULL;
+  /* заполняем поля по-умолчанию */
+  Unit->Init = (VOID *)InfoUnitInit;
+  Unit->Render = (VOID *)InfoUnitRender;
+  return Unit;
+} /* End of 'MY6_InfoUnitCreate' function */
+
+/**************************************************************************/
 /* END OF 'SAMPLE.C' FILE */

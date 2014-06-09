@@ -14,6 +14,7 @@ typedef struct tagIMAGE
 {
   INT W, H;    /* Размер изображения */
   HBITMAP hBm; /* Дескриптор загруженного изображения */
+  HDC hDC;
   DWORD *Bits; /* Цвета точек */
 } IMAGE;
 
@@ -25,6 +26,8 @@ VOID ImageFree( IMAGE *Img );
 
 /* Функция получения цвета точки изображения */
 DWORD ImageGetP( IMAGE *Img, INT X, INT Y );
+
+VOID ImageDraw( IMAGE *Img, HDC hDC, INT X, INT Y, INT LogOp );
 
 #endif /* __IMAGE_H_ */
 

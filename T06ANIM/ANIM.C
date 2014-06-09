@@ -9,6 +9,13 @@
 
 #include "anim.h"
 
+#define MY6_JOYSTICK_THRESHOLD 64.0
+
+#define MY6_GET_AXIS_VALUE(A) \
+  ((INT)(MY6_JOYSTICK_THRESHOLD * (2.0 * (ji.dw ## A ## pos - jc.w ## A ## min) / \
+   (jc.w ## A ## max - jc.w ## A ##min - 1) - 1) + 0.5) / MY6_JOYSTICK_THRESHOLD)
+
+
 /* Системный контекст анимации */
 static my6ANIM MY6_Anim;
 
@@ -101,6 +108,7 @@ VOID MY6_AnimRender( VOID )
   INT i;
   LARGE_INTEGER li;
 
+  MY6_AnimResponse();
   /* Обновление ввода */
   GetKeyboardState(MY6_Anim.Keys);
   for (i = 0; i < 256; i++)
@@ -255,5 +263,52 @@ VOID MY6_AnimSetPause( BOOL NewPauseFlag )
   MY6_Anim.IsPause = NewPauseFlag;
 } /* End of 'MY6_AnimSetPause' function */
 
+VOID MY6_AnimResponse( VOID )
+{
+  INT i;
+
+  if ((i = joyGetNumDevs()) > 0)
+  {
+    JOYCAPS jc;
+
+    /* получение общей информации о джостике */
+    if (joyGetDevCaps(JOYSTICKID1, &jc, sizeof(jc)) == JOYERR_NOERROR)
+    {
+      JOYINFOEX ji;
+
+      /* получение текущего состояния */
+      ji.dwSize = sizeof(JOYCAPS);
+      ji.dwFlags = JOY_RETURNALL;
+      if (joyGetPosEx(JOYSTICKID1, &ji) == JOYERR_NOERROR)
+      {
+        /* Кнопки */
+        memcpy(MY6_Anim.JButsOld, MY6_Anim.JButs, sizeof(MY6_Anim.JButs));
+        for (i = 0; i < 32; i++)
+          MY6_Anim.JButs[i] = (ji.dwButtons >> i) & 1;
+        for (i = 0; i < 32; i++)
+          MY6_Anim.JButsClick[i] = MY6_Anim.JButs[i] && !MY6_Anim.JButsOld[i];
+
+        /* Оси */
+        MY6_Anim.JX = MY6_GET_AXIS_VALUE(X);
+        MY6_Anim.JY = MY6_GET_AXIS_VALUE(Y);
+        if (jc.wCaps & JOYCAPS_HASZ)
+          MY6_Anim.JZ = MY6_GET_AXIS_VALUE(Z);
+        if (jc.wCaps & JOYCAPS_HASR)
+          MY6_Anim.JR = MY6_GET_AXIS_VALUE(R);
+        if (jc.wCaps & JOYCAPS_HASU)
+          MY6_Anim.JU = MY6_GET_AXIS_VALUE(U);
+
+        /* Point-Of-View */
+        if (jc.wCaps & JOYCAPS_HASPOV)
+        {
+          if (ji.dwPOV == 0xFFFF)
+            MY6_Anim.JPOV = 0;
+          else
+            MY6_Anim.JPOV = ji.dwPOV / 4500 + 1;
+        }
+      }
+    }
+  }
+}
 
 /* END OF 'ANIM.C' FILE */
