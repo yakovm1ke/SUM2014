@@ -1,7 +1,7 @@
 /* FILENAME: SAMPLE.C
  * PROGRAMMER: MY6
  * PURPOSE: Animation unit handle module.
- * LAST UPDATE: 07.06.2014
+ * LAST UPDATE: 10.06.2014
  */
 
 #include <stdio.h>
@@ -146,22 +146,22 @@ static VOID InfoUnitInit( my6UNIT_INFO *Unit, my6ANIM *Ani )
 static VOID InfoUnitRender( my6UNIT_INFO *Unit, my6ANIM *Ani )
 {
   static CHAR Buf[1000];
-  static INT cx = 500, cy = 500;
+  static INT cx = 924, cy = 0;
 
   SetBkMode(Ani->hDC, TRANSPARENT);
   SetTextColor(Ani->hDC, RGB(255, 255, 155));
-  TextOut(Ani->hDC, 30, 30, Buf, sprintf(Buf, "FPS: %.3f, JR: %f, JX: %f, JY: %f, JZ: %f", Ani->FPS, Ani->JR, Ani->JX, Ani->JY, Ani->JZ));
+  TextOut(Ani->hDC, 30, 30, Buf, sprintf(Buf, "FPS: %.3f, JR: %f, JX: %f, JY: %f, JZ: %f, 4 - Destroy Window", Ani->FPS, Ani->JR, Ani->JX, Ani->JY, Ani->JZ));
 
   cx += Ani->JR * 20;
   cy += Ani->JZ * 20;
-  if (cx > 1500)
-    cx = - 300;
-  if (cx < - 300)
-    cx = 1500;
-  if (cy > 1200)
-    cy = - 300;
-  if (cy < - 300)
-    cy = 1200;
+  if (cx > Ani->W + 200)
+    cx = - 200;
+  if (cx < - 200)
+    cx = Ani->W + 200;
+  if (cy > Ani->H + 200)
+    cy = - 200;
+  if (cy < - 200)
+    cy = Ani->H + 200;
   ImageDraw(&Unit->And, Ani->hDC,cx, cy, SRCAND );
   ImageDraw(&Unit->Xor, Ani->hDC,cx, cy, SRCINVERT );
 } /* End of 'MY6_AnimUnitRender' function */
@@ -174,7 +174,7 @@ my6UNIT * MY6_InfoUnitCreate( VOID )
 {
   my6UNIT *Unit;
 
-  if ((Unit = (my6UNIT_INFO *)MY6_AnimUnitCreate(sizeof(my6UNIT_INFO))) == NULL)
+  if ((Unit = (my6UNIT/*_INFO*/ *)MY6_AnimUnitCreate(sizeof(my6UNIT/*_INFO*/))) == NULL)
     return NULL;
   /* заполняем поля по-умолчанию */
   Unit->Init = (VOID *)InfoUnitInit;

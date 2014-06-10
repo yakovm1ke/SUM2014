@@ -1,7 +1,7 @@
 /* FILENAME: ANIM.C
  * PROGRAMMER: MY6
  * PURPOSE: Base animation module
- * LAST UPDATE: 07.06.2014
+ * LAST UPDATE: 10.06.2014
  */
 
 #include <stdlib.h>
@@ -287,7 +287,10 @@ VOID MY6_AnimResponse( VOID )
           MY6_Anim.JButs[i] = (ji.dwButtons >> i) & 1;
         for (i = 0; i < 32; i++)
           MY6_Anim.JButsClick[i] = MY6_Anim.JButs[i] && !MY6_Anim.JButsOld[i];
-
+        if (MY6_Anim.JButsClick[3])
+          DestroyWindow(MY6_Anim.hWnd);
+        if (MY6_Anim.JButsClick[9])
+          MY6_AnimFlipFullScreen();;
         /* Îñè */
         MY6_Anim.JX = MY6_GET_AXIS_VALUE(X);
         MY6_Anim.JY = MY6_GET_AXIS_VALUE(Y);

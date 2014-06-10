@@ -1,7 +1,7 @@
 /* FILENAME: SAMPLE.C
  * PROGRAMMER: MY6
  * PURPOSE: Animation unit handle module.
- * LAST UPDATE: 07.06.2014
+ * LAST UPDATE: 10.06.2014
  */
 
 #include <stdio.h>

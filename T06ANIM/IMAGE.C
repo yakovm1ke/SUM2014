@@ -1,7 +1,7 @@
 /* FILENAME: IMAGE.C
  * PROGRAMMER: MY6
  * PURPOSE: Image handle functions
- * LAST UPDATE: 06.06.2014
+ * LAST UPDATE: 10.06.2014
  */
 
 #include "image.h"

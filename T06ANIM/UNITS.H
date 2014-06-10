@@ -1,7 +1,7 @@
 /* FILENAME: UNITS.H
  * PROGRAMMER: MY6
  * PURPOSE: Globe project declaration module.
- * LAST UPDATE: 07.06.2014
+ * LAST UPDATE: 10.06.2014
  */
 
 #ifndef __UNITS_H_
@@ -14,6 +14,9 @@ my6UNIT * MY6_ClockUnitCreate( VOID );
 
 /* Функция создания информационного объекта анимации */
 my6UNIT * MY6_InfoUnitCreate( VOID );
+
+/* Функция создания объекта анимации */
+my6UNIT * MY6_CubeUnitCreate( VOID );
 
 #endif /* __UNITS_H_ */
 

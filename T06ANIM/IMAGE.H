@@ -1,7 +1,7 @@
 /* FILENAME: IMAGE.H
  * PROGRAMMER: MY6
  * PURPOSE: Image handle declaration module.
- * LAST UPDATE: 06.06.2014
+ * LAST UPDATE: 10.06.2014
  */
 
 #ifndef __IMAGE_H_

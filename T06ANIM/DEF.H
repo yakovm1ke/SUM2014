@@ -1,7 +1,7 @@
 /* FILENAME: DEF.H
  * PROGRAMMER: MY6
  * PURPOSE: Default definitions.
- * LAST UPDATE: 06.06.2014
+ * LAST UPDATE: 10.06.2014
  */
 
 #ifndef __DEF_H_

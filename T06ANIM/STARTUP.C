@@ -1,7 +1,7 @@
 /* FILENAME: STARTUP.C
  * PROGRAMMER: MY6
  * PURPOSE: Animation startup module
- * LAST UPDATE: 07.06.2014
+ * LAST UPDATE: 10.06.2014
  */
 
 #include <stdio.h>
@@ -69,8 +69,9 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
   UpdateWindow(hWnd);
 
   /*** Добавление объектов ***/
-  MY6_AnimAddUnit(MY6_ClockUnitCreate());
-  MY6_AnimAddUnit(MY6_InfoUnitCreate());
+  /* MY6_AnimAddUnit(MY6_ClockUnitCreate()); */
+  /* MY6_AnimAddUnit(MY6_InfoUnitCreate()); */
+  MY6_AnimAddUnit(MY6_CubeUnitCreate());
 
   /* Запуск цикла обработки сообщений */
   while (GetMessage(&msg, NULL, 0, 0))
