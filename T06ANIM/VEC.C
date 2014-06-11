@@ -14,5 +14,4 @@ MATR UnitMatrix =
     {0, 0, 0, 1},
   }
 };
-
 /*END OF 'VEC.C' FILE*/

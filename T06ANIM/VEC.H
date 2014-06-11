@@ -267,10 +267,10 @@ __inline MATR MatrViewLookAt( VEC Loc, VEC At, VEC Up )
   m.A[1][1] = Up.Y;
   m.A[2][1] = Up.Z;
   m.A[3][1] = -VecDotVec(Up, Loc);
-  m.A[0][2] = Dir.X;
-  m.A[1][2] = Dir.Y;
-  m.A[2][2] = Dir.Z;
-  m.A[3][2] = -VecDotVec(Dir, Loc);
+  m.A[0][2] = -Dir.X;
+  m.A[1][2] = -Dir.Y;
+  m.A[2][2] = -Dir.Z;
+  m.A[3][2] = VecDotVec(Dir, Loc);
   m.A[0][3] = 0;
   m.A[1][3] = 0;
   m.A[2][3] = 0;
@@ -278,6 +278,21 @@ __inline MATR MatrViewLookAt( VEC Loc, VEC At, VEC Up )
   return m;
 } /* End of 'MatrViewLookAt' function */
 
+__inline MATR MatrProjection( DBL Left, DBL Right,
+                              DBL Bottom, DBL Top,
+                              DBL Near, DBL Far )
+{
+  MATR m =
+  {
+    {
+      {      2 * Near / (Right - Left),                               0,                              0,  0},
+      {                              0,       2 * Near / (Top - Bottom),                              0,  0},
+      {(Right + Left) / (Right - Left), (Top + Bottom) / (Top - Bottom),   -(Far + Near) / (Far - Near), -1},
+      {                              0,                               0, -2 * Near * Far / (Far - Near),  0}
+    }
+  };
+  return m;
+} /* End of 'MatrProjection' function */
 
 #endif /* __VEC_H_ */
 

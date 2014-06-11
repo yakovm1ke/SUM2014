@@ -15,6 +15,7 @@
 typedef struct tagmy6UNIT_CUBE
 {
   MY6_UNIT_BASE_FIELDS; /* Включение базовых полей */
+  my6GOBJ Cow;
 } my6UNIT_CUBE;
 
 /* Функция инициализации объекта анимации.
@@ -27,6 +28,7 @@ typedef struct tagmy6UNIT_CUBE
  */
 static VOID CubeUnitInit( my6UNIT_CUBE *Unit, my6ANIM *Ani )
 {
+  MY6_RndGObjLoad(&Unit->Cow, "Porsche_911_GT2.obj");
 } /* End of 'CubeUnitInit' function */
 
 /* Функция деинициализации объекта анимации.
@@ -39,6 +41,7 @@ static VOID CubeUnitInit( my6UNIT_CUBE *Unit, my6ANIM *Ani )
  */
 static VOID CubeUnitClose( my6UNIT_CUBE *Unit, my6ANIM *Ani )
 {
+  MY6_RndGObjFree(&Unit->Cow);
 } /* End of 'CubeUnitClose' function */
 
 /* Функция обновления межкадровых параметров объекта анимации.
@@ -54,6 +57,7 @@ static VOID CubeUnitResponse( my6UNIT_CUBE *Unit, my6ANIM *Ani )
   MY6_RndWs = Ani->W;
   MY6_RndHs = Ani->H;
   MY6_RndWp = MY6_RndHp * Ani->W / Ani->H;
+  MY6_RndMatrProjection = MatrProjection(-MY6_RndWp / 2, MY6_RndWp / 2, -MY6_RndHp / 2, MY6_RndHp / 2, MY6_RndProjDist, 1000.0);
 } /* End of 'CubeUnitResponse' function */
 
 /* Функция построения объекта анимации.
@@ -67,6 +71,7 @@ static VOID CubeUnitResponse( my6UNIT_CUBE *Unit, my6ANIM *Ani )
 static VOID CubeUnitRender( my6UNIT_CUBE *Unit, my6ANIM *Ani )
 {
   INT i, s = 12;
+  static DBL cx, cy;
   VEC p;
   POINT pt;
   //                  0          1            2           3           4            5             6            7
@@ -75,34 +80,42 @@ static VOID CubeUnitRender( my6UNIT_CUBE *Unit, my6ANIM *Ani )
   {
     INT P0, P1;
   } EDGE;
-  EDGE CubeE[12] = {{0, 1}, {0, 3}, {0, 2}, {2, 4}, {2, 6}, {6, 3}, {3, 5}, {5, 1}, {1, 4}, {6, 7}, {7, 4}, {7, 5}};
-  VEC ppp = {0, 0, 0};
+  EDGE CubeE[12][12] = {{0, 1}, {0, 3}, {0, 2}, {2, 4}, {2, 6}, {6, 3}, {3, 5}, {5, 1}, {1, 4}, {6, 7}, {7, 4}, {7, 5}};
 
-  MY6_RndMatrView = MatrViewLookAt(VecSet(5, 5, 5), VecSet(0, 0, 0), VecSet(0, 1, 0));
-  MY6_RndMatrWorld = MatrRotateY(Ani->Time * 30);;
+  cx += Ani->JX * 3;
+  cy += Ani->JY * 3;
+  MY6_RndMatrView = MatrViewLookAt(VectorTransform(VecSet(0, 0, cx + 5), MatrRotateX(cy)), VecSet(0, 0, 0), VecSet(0, 1, 0));
+
+  MY6_RndMatrWorld = MatrScale(0.1, 0.1 ,0.1);
 
   SelectObject(Ani->hDC, GetStockObject(DC_PEN));
   SelectObject(Ani->hDC, GetStockObject(DC_BRUSH));
   SetDCBrushColor(Ani->hDC, RGB(255, 255, 255));
   SetDCPenColor(Ani->hDC, RGB(255, 255, 255));
 
-  for (i = 0; i < 8; i++)
+  for (i = 0; i < 0; i++)
   {
     p = CubeP[i];
 
     pt = MY6_RndWorldToScreen(p);
     Ellipse(Ani->hDC, pt.x - s, pt.y - s, pt.x + s, pt.y + s);
   }
-  for (i = 0; i < 12; i++)
+  srand(30);
+  for (i = 0; i < 0; i++)
   {
-    p = CubeP[i];
+    p.X = 2.0 * rand() / RAND_MAX - 1;
+    p.Y = 2.0 * rand() / RAND_MAX - 1;
+    p.Z = 2.0 * rand() / RAND_MAX - 1;
     pt = MY6_RndWorldToScreen(p);
     if (i == 0)
       MoveToEx(Ani->hDC, pt.x, pt.y, NULL);
     else
       LineTo(Ani->hDC, pt.x, pt.y);
   }
+  
+  MY6_RndGObjDraw(&Unit->Cow, Ani->hDC);
 } /* End of 'CubeUnitRender' function */
+
 
 /* Функция создания объекта анимации.
  * АРГУМЕНТЫ: Нет.

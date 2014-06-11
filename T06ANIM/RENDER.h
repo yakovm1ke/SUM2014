@@ -18,6 +18,14 @@ typedef struct
     At;              /* точка наблюдения */
 } my6CAMERA;
 
+typedef struct tagmy6GOBJ
+{
+  VEC *V;      /* массив вершин объекта */
+  INT NumOfV;  /* количество вершин */
+  INT (*F)[3]; /* массив граней объекта */
+  INT NumOfF;  /* количество граней */
+} my6GOBJ;
+
 /* Глобальная камера */
 extern my6CAMERA MY6_RndCam;
 
@@ -31,10 +39,21 @@ extern DBL
 /* Матрицы */
 extern MATR
   MY6_RndMatrWorld, /* матрица преобразования мировой СК */
-  MY6_RndMatrView;  /* матрица преобразования видовой СК */
+  MY6_RndMatrView,  /* матрица преобразования видовой СК */
+  MY6_RndMatrProjection;
 
 /* Функция преобразования из мировой системы коорлинат в кадр */
 POINT MY6_RndWorldToScreen( VEC P );
+
+BOOL MY6_RndGObjLoad( my6GOBJ *GObj, CHAR *FileName );
+
+VOID MY6_RndGObjFree( my6GOBJ *GObj );
+
+VOID MY6_RndGObjDraw( my6GOBJ *GObj, HDC hDC );
+
+VOID MY6_RndMatrSetup( VOID );
+
+static MATR MY6_RndMatrWorldViewProj;
 
 #endif /* __RENDER_H_ */
 
