@@ -71,7 +71,7 @@ static VOID CubeUnitResponse( my6UNIT_CUBE *Unit, my6ANIM *Ani )
 static VOID CubeUnitRender( my6UNIT_CUBE *Unit, my6ANIM *Ani )
 {
   INT i, s = 12;
-  static DBL cx, cy;
+  static DBL cx, cy, s1 = 0, s2 = 0;
   VEC p;
   POINT pt;
   //                  0          1            2           3           4            5             6            7
@@ -84,9 +84,14 @@ static VOID CubeUnitRender( my6UNIT_CUBE *Unit, my6ANIM *Ani )
 
   cx += Ani->JX * 3;
   cy += Ani->JY * 3;
-  MY6_RndMatrView = MatrViewLookAt(VectorTransform(VecSet(0, 0, cx + 5), MatrRotateX(cy)), VecSet(0, 0, 0), VecSet(0, 1, 0));
+  MY6_RndMatrView = MatrViewLookAt(VectorTransform(VecSet(0, 0, 5), MatrRotateX(0)), VecSet(0, 0, 0), VecSet(0, 1, 0));
 
-  MY6_RndMatrWorld = MatrScale(0.1, 0.1 ,0.1);
+  s2 += Ani->JR / 20;
+  s1 -= Ani->JButsClick[1] / 5;
+
+  MY6_RndMatrWorld = MatrScale(1 + s2, 1 + s2 ,1 + s2);
+  MY6_RndMatrWorld = MatrMulMatr( MY6_RndMatrWorld, MatrRotateY(-cx ));
+  MY6_RndMatrWorld = MatrMulMatr( MY6_RndMatrWorld, MatrRotateX(-cy ));
 
   SelectObject(Ani->hDC, GetStockObject(DC_PEN));
   SelectObject(Ani->hDC, GetStockObject(DC_BRUSH));

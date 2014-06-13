@@ -7,7 +7,8 @@
 #define __VEC_H_
 
 #include <math.h>
-#include "def.h"
+
+#include <windows.h>
 
 #define MY6_PI 3.14159265358979323846
 #define MY6_D2R(A) ((A) * (MY6_PI / 180.0))
