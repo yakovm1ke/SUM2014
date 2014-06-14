@@ -11,6 +11,8 @@
 
 my6UNIT * MY6_InfoUnitCreate( VOID );
 
+my6UNIT * MY6_GObjUnitCreate( VOID );
+
 #endif /* __UNITS_H_ */
 
 /* END OF 'UNITS.H' FILE */
