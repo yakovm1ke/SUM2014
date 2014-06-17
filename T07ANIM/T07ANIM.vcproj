@@ -186,6 +186,10 @@
 				RelativePath=".\MAIN.C"
 				>
 			</File>
+			<File
+				RelativePath=".\SHADER.C"
+				>
+			</File>
 			<Filter
 				Name="Animation System"
 				>
@@ -195,6 +199,18 @@
 				</File>
 				<File
 					RelativePath=".\ANIM.H"
+					>
+				</File>
+				<File
+					RelativePath=".\GEOMHAND.C"
+					>
+				</File>
+				<File
+					RelativePath=".\GEOMLOAD.C"
+					>
+				</File>
+				<File
+					RelativePath=".\PRIM.C"
 					>
 				</File>
 				<File
@@ -221,11 +237,19 @@
 					Name="Resource Handle"
 					>
 					<File
+						RelativePath=".\GEOM.H"
+						>
+					</File>
+					<File
 						RelativePath=".\IMAGE.C"
 						>
 					</File>
 					<File
 						RelativePath=".\IMAGE.H"
+						>
+					</File>
+					<File
+						RelativePath=".\SHADER.H"
 						>
 					</File>
 				</Filter>

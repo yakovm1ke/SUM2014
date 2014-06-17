@@ -17,7 +17,9 @@
 
 
 /* Системный контекст анимации */
-static my6ANIM MY6_Anim;
+my6ANIM MY6_Anim;
+
+UINT MY6_ShaderProg;
 
 /* Данные для синхронизации по времени */
 static INT64
@@ -73,6 +75,10 @@ BOOL MY6_AnimInit( HWND hWnd )
     memset(&MY6_Anim, 0, sizeof(my6ANIM));
   }
 
+  /* OpenGL INIT */
+  glEnable(GL_DEPTH_TEST);
+  MY6_ShaderProg = MY6_ShadProgInit("a.vert", "a.frag");
+
   /* инициализируем таймер */
   QueryPerformanceFrequency(&li);
   TimeFreq = li.QuadPart;
@@ -101,6 +107,7 @@ VOID MY6_AnimClose( VOID )
 {
   INT i;
 
+  MY6_ShadProgClose(MY6_ShaderProg);
   /* Освобождение памяти из-под объектов анимации */
   for (i = 0; i < MY6_Anim.NumOfUnits; i++)
   {

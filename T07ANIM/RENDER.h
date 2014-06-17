@@ -26,11 +26,13 @@ typedef struct tagmy6GOBJ
   INT NumOfF;  /* количество граней */
 } my6GOBJ;
 
+extern COLOR MY6_DefaultColor;
+
 BOOL MY6_RndGObjLoad( my6GOBJ *GObj, CHAR *FileName );
 
 VOID MY6_RndGObjFree( my6GOBJ *GObj );
 
-VOID MY6_RndGObjDraw( my6GOBJ *GObj, HDC hDC );
+VOID MY6_RndGObjDraw( my6GOBJ *GObj);
 
 #endif /* __RENDER_H_ */
 

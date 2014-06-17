@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "render.h"
+#include "anim.h"
 
 BOOL MY6_RndGObjLoad( my6GOBJ *GObj, CHAR *FileName )
 {
@@ -89,27 +90,24 @@ VOID MY6_RndGObjFree( my6GOBJ *GObj )
  *       HDC hDC;
  * ¬Œ«¬–¿Ÿ¿≈ÃŒ≈ «Õ¿◊≈Õ»≈: ÕÂÚ.
  */
-VOID MY6_RndGObjDraw( my6GOBJ *GObj, HDC hDC )
+VOID MY6_RndGObjDraw( my6GOBJ *GObj )
 {
-  /*INT i;
+  INT i;
 
-  for (i = 0; i < GObj->NumOfV; i++)
-    pts[i] = MY6_RndWorldToScreen(GObj->V[i]);
-
+  if (MY6_Anim.JButs[4])
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  else
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  glBegin(GL_TRIANGLES);
+  glColor3d(0.8, 0.2, 0.43);
   for (i = 0; i < GObj->NumOfF; i++)
   {
-    INT
-      n0 = GObj->F[i][0],
-      n1 = GObj->F[i][1],
-      n2 = GObj->F[i][2];
-
-    MoveToEx(hDC, pts[n0].x, pts[n0].y, NULL);
-    LineTo(hDC, pts[n1].x, pts[n1].y);
-    LineTo(hDC, pts[n2].x, pts[n2].y);
-    LineTo(hDC, pts[n0].x, pts[n0].y);
+    INT n0 = GObj->F[i][0], n1 = GObj->F[i][1], n2 = GObj->F[i][2];
+    glVertex3fv(&GObj->V[n0].X);
+    glVertex3fv(&GObj->V[n1].X);
+    glVertex3fv(&GObj->V[n2].X);
   }
-  free(pts);
-  */
+  glEnd();
 } /* End of 'MY6_RndGObjDraw' function */
 
 

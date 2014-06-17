@@ -8,6 +8,8 @@
 #define __ANIM_H_
 
 #include "image.h"
+#include "render.h"
+#include "shader.h"
 
 /* Максимальное количество элементов анимации */
 #define MY6_MAX_UNITS 3000
@@ -39,7 +41,7 @@ typedef struct tagmy6ANIM
 
   /* Подсистема ввода */
   BYTE Keys[256], KeysOld[256], KeysClick[256];     /* Сотояние клавиш клавиатуры и мыши */
-  BYTE JButs[32], JButsClick[32], JButsOld[32];
+  INT JButs[32], JButsClick[32], JButsOld[32];
   DBL JX, JY, JZ, JU, JR, JPOV;
 
   /* Параметры проецирования */
@@ -55,6 +57,8 @@ typedef struct tagmy6ANIM
     MatrProjection;
 
 } my6ANIM;
+extern my6ANIM MY6_Anim;
+
 /* Базовые поля объекта анимации:
  * - размер структуры для наследования
  *     INT Size;
@@ -79,6 +83,8 @@ struct tagmy6UNIT
 {
   MY6_UNIT_BASE_FIELDS; /* Базовые поля */
 };
+
+extern UINT MY6_ShaderProg;
 
 /***
  * Функции управления анимацией

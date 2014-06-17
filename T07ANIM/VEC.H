@@ -1,7 +1,7 @@
 /* FILENAME: VEC.H
  * PROGRAMMER: MY6
  * PURPOSE: Math declaration module.
- * LAST UPDATE: 10.06.2014
+ * LAST UPDATE: 17.06.2014
  */
 #ifndef __VEC_H_
 #define __VEC_H_
@@ -10,6 +10,8 @@
 
 #include <windows.h>
 
+#pragma warning(disable: 4244)
+
 #define MY6_PI 3.14159265358979323846
 #define MY6_D2R(A) ((A) * (MY6_PI / 180.0))
 #define MY6_R2D(A) ((A) * (180.0 / MY6_PI))
@@ -17,19 +19,24 @@
 typedef double DBL;
 typedef float FLT;
 
+typedef struct tagCOLOR
+{
+  FLT B, G, R, A;
+} COLOR;
+
 typedef struct tagVEC
 {
-  DBL X, Y, Z;
+  FLT X, Y, Z;
 } VEC;
 
 typedef struct tagMATR
 {
-  DBL A[4][4];
+  FLT A[4][4];
 } MATR;
 
 extern MATR UnitMatrix;
 
-__inline VEC VecSet( DBL X, DBL Y, DBL Z )
+__inline VEC VecSet( FLT X, FLT Y, FLT Z )
 {
   VEC v;
 
@@ -47,7 +54,7 @@ __inline VEC VecSubVec(VEC V1, VEC V2)
 {
   return VecSet( V1.X - V2.X, V1.Y - V2.Y, V1.Z - V2.Z );
 }
-__inline VEC VecDivNum( VEC V, DBL N )
+__inline VEC VecDivNum( VEC V, FLT N )
 { 
   return VecSet( V.X / N, V.Y / N, V.Z / N );
 }
@@ -59,34 +66,34 @@ __inline VEC VecCrossVec(VEC V1, VEC V2)
 {
   return VecSet( V1.Y * V2.Z - V1.Z * V2.Y, V1.Z * V2.X - V1.X * V2.Z, V1.X * V2.Y - V1.Y * V2.X );
 }
-__inline VEC VecMulNum( VEC V, DBL N )
+__inline VEC VecMulNum( VEC V, FLT N )
 {
   return VecSet( V.X * N, V.Y * N, V.Z * N );
 }
 __inline VEC VecNormalize( VEC V )
 {
-  DBL len = V.X * V.X + V.Y + V.Y + V.Z * V.Z;
+  FLT len = V.X * V.X + V.Y + V.Y + V.Z * V.Z;
   
   if(len != 0 && len != 1)
     len = sqrt(len), V.X /= len, V.Y /= len, V.Z /= len;
   return V;
 }
 
-__inline DBL VecDotVec(VEC V1, VEC V2)
+__inline FLT VecDotVec(VEC V1, VEC V2)
 {
   return V1.X * V2.X + V1.Y * V2.Y + V1.Z * V2.Z;
 }
-__inline DBL VecLen( VEC V )
+__inline FLT VecLen( VEC V )
 {
-  DBL len = VecDotVec(V, V);
+  FLT len = VecDotVec(V, V);
 
   if (len != 0 && len != 1)
     return sqrt(len);
   return len;
 }
-__inline DBL VecLen2( VEC V )
+__inline FLT VecLen2( VEC V )
 {
-  DBL len = VecDotVec(V, V);
+  FLT len = VecDotVec(V, V);
 
   return len;
 }
@@ -94,7 +101,7 @@ __inline MATR MatrIdentity( VOID )
 {
   return UnitMatrix;
 }
-__inline MATR MatrTranslate( DBL Dx, DBL Dy, DBL Dz )
+__inline MATR MatrTranslate( FLT Dx, FLT Dy, FLT Dz )
 {
   MATR m = UnitMatrix;
 
@@ -103,7 +110,7 @@ __inline MATR MatrTranslate( DBL Dx, DBL Dy, DBL Dz )
   m.A[3][2] = Dz;
   return m;
 }
-__inline MATR MatrScale( DBL Sx, DBL Sy, DBL Sz )
+__inline MATR MatrScale( FLT Sx, FLT Sy, FLT Sz )
 {
   MATR m = UnitMatrix;
 
@@ -113,10 +120,10 @@ __inline MATR MatrScale( DBL Sx, DBL Sy, DBL Sz )
   
   return m;
 }
-__inline MATR MatrRotateX( DBL AngleInDegree )
+__inline MATR MatrRotateX( FLT AngleInDegree )
 {
   MATR m = UnitMatrix;
-  DBL a, co, si;
+  FLT a, co, si;
 
   a = MY6_D2R(AngleInDegree);
   si = sin(a);
@@ -129,10 +136,10 @@ __inline MATR MatrRotateX( DBL AngleInDegree )
   
   return m;
 }
-__inline MATR MatrRotateY( DBL AngleInDegree )
+__inline MATR MatrRotateY( FLT AngleInDegree )
 {
   MATR m = UnitMatrix;
-  DBL a, co, si;
+  FLT a, co, si;
 
   a = MY6_D2R(AngleInDegree);
   si = sin(a);
@@ -145,10 +152,10 @@ __inline MATR MatrRotateY( DBL AngleInDegree )
   
   return m;
 }
-__inline MATR MatrRotateZ( DBL AngleInDegree )
+__inline MATR MatrRotateZ( FLT AngleInDegree )
 {
   MATR m = UnitMatrix;
-  DBL a, co, si;
+  FLT a, co, si;
 
   a = MY6_D2R(AngleInDegree);
   si = sin(a);
@@ -171,14 +178,14 @@ __inline MATR MatrTranspose( MATR M )
       N.A[j][i] = M.A[i][j];
   return N;
 }
-__inline DBL MatrDeterm3x3( DBL A11, DBL A12, DBL A13,
-                   DBL A21, DBL A22, DBL A23,
-                   DBL A31, DBL A32, DBL A33 )
+__inline FLT MatrDeterm3x3( FLT A11, FLT A12, FLT A13,
+                   FLT A21, FLT A22, FLT A23,
+                   FLT A31, FLT A32, FLT A33 )
 {
   return A11 * A22 * A33 + A12 * A23 * A31 + A13 * A21 * A32 +
         -A11 * A23 * A32 - A12 * A21 * A33 - A13 * A22 * A31;
 }
-__inline DBL MatrDeterm( MATR M )
+__inline FLT MatrDeterm( MATR M )
 {
   return
     M.A[0][0] * MatrDeterm3x3(M.A[1][1], M.A[1][2], M.A[1][3],
@@ -198,7 +205,7 @@ __inline MATR MatrInverse( MATR M )
 {
   MATR r;
   INT i, j;
-  DBL det = MatrDeterm(M);
+  FLT det = MatrDeterm(M);
   INT perm[4][3] =
   {
     {1, 2, 3},
@@ -227,7 +234,7 @@ __inline MATR MatrInverse( MATR M )
 }
 __inline VEC PointTransform(VEC V, MATR M)
 {
-  DBL w = V.X * M.A[0][3] + V.Y * M.A[1][3] + V.Z * M.A[2][3] + M.A[3][3];
+  FLT w = V.X * M.A[0][3] + V.Y * M.A[1][3] + V.Z * M.A[2][3] + M.A[3][3];
 
   return VecSet((V.X * M.A[0][0] + V.Y * M.A[1][0] + V.Z * M.A[2][0] + M.A[3][0]) / w,
                 (V.X * M.A[0][1] + V.Y * M.A[1][1] + V.Z * M.A[2][1] + M.A[3][1]) / w,
@@ -281,9 +288,9 @@ __inline MATR MatrViewLookAt( VEC Loc, VEC At, VEC Up )
   return m;
 } /* End of 'MatrViewLookAt' function */
 
-__inline MATR MatrProjection( DBL Left, DBL Right,
-                              DBL Bottom, DBL Top,
-                              DBL Near, DBL Far )
+__inline MATR MatrProjection( FLT Left, FLT Right,
+                              FLT Bottom, FLT Top,
+                              FLT Near, FLT Far )
 {
   MATR m =
   {
@@ -297,6 +304,27 @@ __inline MATR MatrProjection( DBL Left, DBL Right,
   return m;
 } /* End of 'MatrProjection' function */
 
+__inline COLOR ColorSet( FLT R, FLT G, FLT B )
+{
+  COLOR C;
+
+  C.R = R;
+  C.G = G;
+  C.B = B;
+  C.A = 1;
+  return C;
+} /* End of 'ColorSetA' function */
+
+__inline COLOR ColorSetA( FLT R, FLT G, FLT B, FLT A )
+{
+  COLOR C;
+
+  C.R = R;
+  C.G = G;
+  C.B = B;
+  C.A = A;
+  return C;
+} /* End of 'ColorSetA' function */
 #endif /* __VEC_H_ */
 
 /* END OF 'VEC.H' FILE */
