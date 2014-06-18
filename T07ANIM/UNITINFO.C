@@ -71,12 +71,12 @@ static VOID InfoUnitResponse( my6UNIT_INFO *Unit, my6ANIM *Ani )
  */
 static VOID InfoUnitRender( my6UNIT_INFO *Unit, my6ANIM *Ani )
 {
-  static CHAR Buf[1000];
+  /*static CHAR Buf[1000];
 
   sprintf(Buf, "FPS: %.3f", Ani->FPS);
   SetWindowText(Ani->hWnd, Buf);
-
-  glBegin(GL_LINES);
+  */
+  /*glBegin(GL_LINES);
     glColor3d(1, 0, 0);
     glVertex3d(0, 0, 0);
     glVertex4d(1, 0, 0, 0);
@@ -87,7 +87,7 @@ static VOID InfoUnitRender( my6UNIT_INFO *Unit, my6ANIM *Ani )
     glVertex3d(0, 0, 0);
     glVertex4d(0, 0, 1, 0);
   glEnd();
-
+  */
 } /* End of 'InfoUnitRender' function */
 
 /* Функция создания информационного объекта анимации.

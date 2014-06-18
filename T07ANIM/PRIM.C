@@ -156,9 +156,9 @@ BOOL MY6_PrimCreateCylinder( my6PRIM *P, FLT H, FLT R, INT M, INT N )
         phi = j / (M - 1.0) * 2 * MY6_PI;
 
       V->N = VecSet(0, sin(phi), cos(phi));
-      V->P = VecSet(-H / 2 + i * H / (N - 1), V->N.Y * R, V->N.Z * R);
-      V->T.U *= 10;
-      V->T.V *= 8;  /* количество полос */
+      V->P = VecSet(-H / 2 + i * H / (N - 1), V->N.Y * R, V->N.Z * R );
+      V->T.U *= 1300;
+      V->T.V *= 7;  /* количество полос */
     }
   return TRUE;
 } /* End of 'MY6_PrimCreateCylinder' function */
@@ -244,8 +244,14 @@ VOID MY6_PrimDraw( my6PRIM *P )
         glVertex3fv(&P->V[start + P->I[j]].P.X);
       glEnd();
       */
+      /*
       glDrawElements(GL_TRIANGLE_STRIP, P->NumOfI, GL_UNSIGNED_INT,
         (VOID *)(i * P->GW * 2 * sizeof(INT)));
+          glDrawElements(GL_TRIANGLES, P->NumOfI, GL_UNSIGNED_INT, (VOID *)0);
+      */
+      glDrawElementsBaseVertex(GL_TRIANGLE_STRIP,
+        P->NumOfI, GL_UNSIGNED_INT, (VOID *)0, i * P->GW);
+
     }
   }
   glUseProgram(0);

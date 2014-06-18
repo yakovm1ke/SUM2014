@@ -30,6 +30,8 @@ uniform mat4 MatrWorld;
 uniform int Joy[10];
 uniform float J0;
 uniform float J1;
+uniform float Data[10];
+
 
 /* Текстура */
 uniform sampler2D DrawTexture;
@@ -72,7 +74,9 @@ void main( void )
   if (J0 == 1)
     OutColor = vec4(1, 1, 1, 1);
   else
-    OutColor = vec4(texc.xyz, 1);//DrawNormal.xyz / 10, Trans);
+    OutColor = vec4(texc.xyz, 1); //vec4(DrawNormal.xyz / 10, Trans);
+  if (Data[0] == 1)
+    OutColor = vec4(0, 0, 0, 1);
   //OutColor = vec4(DrawNormal.xyz, Trans);
   /*
   float start = 2.5, end = -0.61;

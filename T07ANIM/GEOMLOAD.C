@@ -23,10 +23,9 @@
 /* Буфер ввода */
 static CHAR Buf[MAX_BUF_SIZE];
 
-my6PRIM prim;
-
 /* Части буфера */
 static INT NumOfParts;
+
 static CHAR *Parts[MAX_BUF_SIZE / 2];
 
 /* Функция разбиения строки на части.
@@ -139,70 +138,64 @@ static VOID LoadMaterials( my6GEOM *G, CHAR *FileName )
   my6MATERIAL DefMat, Mat;
   static CHAR FName[_MAX_PATH];
 
-  _makepath(FName, ModelDrive, ModelDir, FileName, "");
-  if ((F = fopen(FName, "r")) == NULL)
-    return;
-
   DefMat.Ka = VecSet(0.1, 0.1, 0.1);
-  DefMat.Kd = VecSet(0.9, 0.9, 0.9);
+  DefMat.Kd = VecSet(1.0, 1.0, 1.0);
   DefMat.Ks = VecSet(0.0, 0.0, 0.0);
   DefMat.Phong = 30;
   DefMat.TexNo = 0;
   DefMat.Trans = 1;
-  strcpy(DefMat.MapD, "r.bmp");
   strcpy(DefMat.Name, "Default Material SPR 2014");
   DefMat.MapD[0] = 0;
   Mat = DefMat;
-//  prim.Mtl = MY6_GeomAddMaterial(&Unit->Gobj, &DefMat);
 
-/*
-  strcpy(DefMat.Name, "Default Material SPR 2014");
-  DefMat.MapD[0] = 0;
-  Mat = DefMat;
-*/
-  /* считываем все сроки */
-  while (fgets(Buf, sizeof(Buf), F) != NULL)
+  if (FName != NULL)
+    _makepath(FName, ModelDrive, ModelDir, FileName, "");
+  if (FName != NULL && (F = fopen(FName, "r")) != NULL)
   {
-    Split();
-    if (NumOfParts > 1)
-      if (strcmp(Parts[0], "Ka") == 0)
-      {
-        sscanf(Parts[1], "%f", &Mat.Ka.X);
-        sscanf(Parts[2], "%f", &Mat.Ka.Y);
-        sscanf(Parts[3], "%f", &Mat.Ka.Z);
-      }
-      else if (strcmp(Parts[0], "Kd") == 0)
-      {
-        sscanf(Parts[1], "%f", &Mat.Kd.X);
-        sscanf(Parts[2], "%f", &Mat.Kd.Y);
-        sscanf(Parts[3], "%f", &Mat.Kd.Z);
-      }
-      else if (strcmp(Parts[0], "Ks") == 0)
-      {
-        sscanf(Parts[1], "%f", &Mat.Ks.X);
-        sscanf(Parts[2], "%f", &Mat.Ks.Y);
-        sscanf(Parts[3], "%f", &Mat.Ks.Z);
-      }
-      else if (strcmp(Parts[0], "Ns") == 0)
-        sscanf(Parts[1], "%f", &Mat.Phong);
-      else if (strcmp(Parts[0], "D") == 0 ||
-               strcmp(Parts[0], "d") == 0 ||
-               strcmp(Parts[0], "Tr") == 0)
-        sscanf(Parts[1], "%f", &Mat.Trans);
-      else if (strcmp(Parts[0], "map_Kd") == 0)
-      {
-        _splitpath(Parts[NumOfParts - 1], TexDrive, TexDir, TexFileName, TexFileExt);
-        _makepath(Mat.MapD, ModelDrive, ModelDir, TexFileName, ".bmp");
-      }
-      else if (strcmp(Parts[0], "newmtl") == 0)
-      {
-        MY6_GeomAddMaterial(G, &Mat);
-        Mat = DefMat;
-        strncpy(Mat.Name, Parts[1], sizeof(Mat.Name) - 1);
-      }
+    /* считываем все сроки */
+    while (fgets(Buf, sizeof(Buf), F) != NULL)
+    {
+      Split();
+      if (NumOfParts > 1)
+        if (strcmp(Parts[0], "Ka") == 0)
+        {
+          sscanf(Parts[1], "%f", &Mat.Ka.X);
+          sscanf(Parts[2], "%f", &Mat.Ka.Y);
+          sscanf(Parts[3], "%f", &Mat.Ka.Z);
+        }
+        else if (strcmp(Parts[0], "Kd") == 0)
+        {
+          sscanf(Parts[1], "%f", &Mat.Kd.X);
+          sscanf(Parts[2], "%f", &Mat.Kd.Y);
+          sscanf(Parts[3], "%f", &Mat.Kd.Z);
+        }
+        else if (strcmp(Parts[0], "Ks") == 0)
+        {
+          sscanf(Parts[1], "%f", &Mat.Ks.X);
+          sscanf(Parts[2], "%f", &Mat.Ks.Y);
+          sscanf(Parts[3], "%f", &Mat.Ks.Z);
+        }
+        else if (strcmp(Parts[0], "Ns") == 0)
+          sscanf(Parts[1], "%f", &Mat.Phong);
+        else if (strcmp(Parts[0], "D") == 0 ||
+                 strcmp(Parts[0], "d") == 0 ||
+                 strcmp(Parts[0], "Tr") == 0)
+          sscanf(Parts[1], "%f", &Mat.Trans);
+        else if (strcmp(Parts[0], "map_Kd") == 0)
+        {
+          _splitpath(Parts[NumOfParts - 1], TexDrive, TexDir, TexFileName, TexFileExt);
+          _makepath(Mat.MapD, ModelDrive, ModelDir, TexFileName, ".bmp");
+        }
+        else if (strcmp(Parts[0], "newmtl") == 0)
+        {
+          MY6_GeomAddMaterial(G, &Mat);
+          Mat = DefMat;
+          strncpy(Mat.Name, Parts[1], sizeof(Mat.Name) - 1);
+        }
+    }
+    fclose(F);
   }
   MY6_GeomAddMaterial(G, &Mat);
-  fclose(F);
 } /* End of 'LoadMaterials' function */
 
 /* Вспомогательная макро-функция разбора индексов граней */

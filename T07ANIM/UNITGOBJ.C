@@ -12,10 +12,13 @@
 typedef struct tagmy6UNIT_GOBJ
 {
   MY6_UNIT_BASE_FIELDS; /* Включение базовых полей */
-  my6GEOM Gobj;
+  my6GEOM Road;
+  my6GEOM Car;
 } my6UNIT_GOBJ;
 
 MATR WVP;
+
+FLT RoadR = 20000;
 
 /* Функция инициализации объекта анимации.
  * АРГУМЕНТЫ:
@@ -28,7 +31,33 @@ MATR WVP;
 
 static VOID GObjUnitInit( my6UNIT_GOBJ *Unit, my6ANIM *Ani )
 {
-  MY6_GeomLoad(&Unit->Gobj, "cow.object");
+  my6PRIM prim = {0};
+  my6MATERIAL mtl = {0};
+
+  memset(&Unit->Road, 0, sizeof(my6GEOM));
+  memset(&Unit->Car, 0, sizeof(my6GEOM));
+
+  MY6_GeomLoad(&Unit->Car, "e:\\Models\\x6\\x6.object");
+  MY6_GeomTransform(&Unit->Car, MatrRotateX(-90));
+  MY6_GeomTransform(&Unit->Car, MatrRotateY(180));
+  MY6_GeomTransform(&Unit->Car, MatrTranslate(2.7, 0.87, 0));
+
+
+  MY6_PrimCreateCylinder(&prim, 200, RoadR, 2000, 5);
+
+  mtl.Ka = VecSet(0.1, 0.1, 0.1);
+  mtl.Kd = VecSet(1, 1, 1);
+  mtl.Ks = VecSet(0, 0, 0);
+  mtl.Phong = 30;
+  mtl.Trans = 1;
+  mtl.TexNo = 0;
+  mtl.MapD[0] = 0;
+  strcpy(mtl.MapD, "r.bmp");
+  strcpy(mtl.Name, "Road material");
+  prim.Mtl = MY6_GeomAddMaterial(&Unit->Road, &mtl);
+
+  MY6_GeomAddPrim(&Unit->Road, &prim);
+
 } /* End of 'GObjUnitInit' function */
 
 /* Функция обновления межкадровых параметров объекта анимации.
@@ -57,26 +86,43 @@ static VOID GObjUnitRender( my6UNIT_GOBJ *Unit, my6ANIM *Ani )
 {
   INT loc;
   static INT ShadProgId;
-  static DBL rotatey, rotatex, scale, tr, time;
+  static DBL rotatey, rotatex, scale, tr, time, full_shift = 0, vert_shift, hor_shift = 0, v = 0;
+  DBL rot = 0;
 
-  rotatey += Ani->JX * 10;
-  rotatex += Ani->JY * 10;
+  rotatey += Ani->JX * 4;
+  rotatex += Ani->JY * 4;
   scale += Ani->JR / 50;
-  tr += Ani->JZ * 10;
 
-  Ani->MatrView = MatrViewLookAt(VecSet(15, 15, 15), VecSet(0, 0, 0), VecSet(0, 1, 0));
+  vert_shift += (Ani->JPOV == 1) * Ani->DeltaTime * 10.0 - (Ani->JPOV == 5) * Ani->DeltaTime * 10.0;
+  hor_shift += Ani->JX * Ani->DeltaTime * 6.0;
+
+  if(Ani->JX != 0)
+  {
+    if(v > 0)
+      rot = Ani->JX * 6;
+    else
+      rot = -Ani->JX * 6;
+  }
+
+  if(vert_shift < -4)
+    vert_shift = -4;
+  if(vert_shift > 10)
+    vert_shift = 10;
+
+
+  Ani->MatrView = MatrViewLookAt(VecSet(2.7, 5 + vert_shift, 30), VecSet(2.7, 1, 0), VecSet(0, 1, 0));
 
   Ani->MatrProjection = MatrProjection(-Ani->Wp / 2, Ani->Wp / 2,
                                        -Ani->Hp / 2, Ani->Hp / 2,
                                         Ani->ProjDist, Ani->FarClip);
 
-  Ani->MatrWorld = MatrScale(1 + scale, 1 + scale, 1 + scale);
-  Ani->MatrWorld = MatrMulMatr(Ani->MatrWorld, MatrRotateY(rotatey));
-  Ani->MatrWorld = MatrMulMatr(Ani->MatrWorld, MatrRotateX(rotatex));
+  //Ani->MatrWorld = MatrScale(1 + scale, 1 + scale, 1 + scale);
+  //Ani->MatrWorld = MatrMulMatr(Ani->MatrWorld, MatrRotateY(rotatey));
+  //Ani->MatrWorld = MatrMulMatr(Ani->MatrWorld, MatrRotateX(rotatex));
 
   WVP = MatrMulMatr(Ani->MatrWorld, MatrMulMatr(Ani->MatrView, Ani->MatrProjection));
 
-  glLoadMatrixf( WVP.A[0] );
+  glLoadMatrixf(WVP.A[0]);
 
   if (Ani->JButs[5])
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -100,8 +146,38 @@ static VOID GObjUnitRender( my6UNIT_GOBJ *Unit, my6ANIM *Ani )
   if (loc != -1)
     glUniform1f(loc, Ani->JButs[1]);
 
-  //MY6_GeomDraw(&Unit->Gobj);
-  MY6_PrimCreateCylinder(&prim, 12, 1, 88, 5);
+
+
+  /* Draw road */
+  v += Ani->JZ * 0.01;
+  full_shift += v * Ani->DeltaTime;
+  if(Ani->JButsClick[7])
+    v = 0;
+  if(v < -0.8)
+    v = -0.8;
+  if(v > 2)
+    v = 2;
+  if(hor_shift > 10)
+    hor_shift = 10;
+  if(hor_shift < -15)
+    hor_shift = -15;
+  if (v == 0)
+    hor_shift -= Ani->JX * Ani->DeltaTime * 6.0;
+
+  Ani->MatrWorld = MatrMulMatr(MatrRotateX(-full_shift), MatrTranslate(-hor_shift, -RoadR, 0));
+  MY6_GeomDraw(&Unit->Road);
+
+  Ani->MatrWorld = MatrRotateY(rot);
+  MY6_GeomDraw(&Unit->Car);
+
+  Ani->MatrWorld = MatrRotateY(rot);
+  Ani->MatrWorld = MatrMulMatr(Ani->MatrWorld, MatrScale(1, 0, 1));
+  Ani->MatrWorld = MatrMulMatr(Ani->MatrWorld, MatrTranslate(0, 0.02, 0));
+
+  Unit->Car.Data[0] = 1;
+  MY6_GeomDraw(&Unit->Car);
+  Unit->Car.Data[0] = 0;
+
   glUseProgram(0);
 } /* End of 'GObjUnitRender' function */
 
@@ -115,7 +191,7 @@ static VOID GObjUnitRender( my6UNIT_GOBJ *Unit, my6ANIM *Ani )
  */
 static VOID GObjUnitClose( my6UNIT_GOBJ *Unit, my6ANIM *Ani )
 {
-  MY6_GeomFree(&Unit->Gobj);
+  MY6_GeomFree(&Unit->Road);
 } /* End of 'GObjUnitClose' function */
 
 /* Функция создания объекта анимации.

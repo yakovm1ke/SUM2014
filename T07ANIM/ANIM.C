@@ -77,6 +77,8 @@ BOOL MY6_AnimInit( HWND hWnd )
 
   /* OpenGL INIT */
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   MY6_ShaderProg = MY6_ShadProgInit("a.vert", "a.frag");
 
   /* инициализируем таймер */
@@ -199,6 +201,7 @@ VOID MY6_AnimRender( VOID )
   /* очистка фона */
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  glClearColor(0.3, 0.5, 0.7, 1);
   /* drawing objects*/
   for (i = 0; i < MY6_Anim.NumOfUnits; i++)
     MY6_Anim.Units[i]->Render(MY6_Anim.Units[i], &MY6_Anim);

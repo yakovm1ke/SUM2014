@@ -106,7 +106,12 @@ typedef struct tagmy6GEOM
   INT NumOfPrims, NumOfMtls; /* размерв массивов */
   my6MATERIAL *Mtls;         /* таблица материалов */
   my6PRIM *Prims;            /* массив примитивов */
+  FLT Data[10];
 } my6GEOM;
+
+//extern my6PRIM prim = {0};
+//extern my6MATERIAL mtl = {0};
+
 
 /* Функция добавления материала к объекту */
 INT MY6_GeomAddMaterial( my6GEOM *G,
@@ -120,6 +125,8 @@ VOID MY6_GeomFree( my6GEOM *G );
 
 /* Функция рисования */
 VOID MY6_GeomDraw( my6GEOM *G );
+
+VOID MY6_GeomTransform( my6GEOM *G, MATR M );
 
 /* Функция загрузки геометрического объекта */
 BOOL MY6_GeomLoad( my6GEOM *G, CHAR *FileName );

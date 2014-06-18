@@ -193,10 +193,27 @@ VOID MY6_GeomDraw( my6GEOM *G )
       if (loc != -1)
         glUniform1f(loc, G->Mtls[mtl].Trans);
     }
+    loc = glGetUniformLocation(MY6_ShaderProg, "Data");
+    if (loc != -1)
+      glUniform1fv(loc, 10, G->Data);
     MY6_PrimDraw(G->Prims + i);
     glDisable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, 0);
   }
 } /* End of 'MY6_GeomDraw' function */
+VOID MY6_GeomTransform( my6GEOM *G, MATR M )
+{
+  INT i, j;
+  MATR InvM = MatrTranspose(MatrInverse(M));
+
+  InvM.A[3][0] = InvM.A[3][1] = InvM.A[3][2] = 0;
+
+  for (i = 0; i < G->NumOfPrims; i++)
+    for (j = 0; j < G->Prims[i].NumOfV; j++)
+    {
+      G->Prims[i].V[j].P = PointTransform(G->Prims[i].V[j].P, M);
+      G->Prims[i].V[j].N = PointTransform(G->Prims[i].V[j].N, InvM);
+    }
+} /* End of 'MY6_GeomTransform' function */
 
 /* END OF 'GEOMHAND.C' FILE */
