@@ -72,11 +72,16 @@ void main( void )
 {
   vec4 texc = texture2D(DrawTexture, DrawTexCoord.xy);
   if (J0 == 1)
-    OutColor = vec4(1, 1, 1, 1);
+    OutColor = vec4(1, 110.0 / 255.0, 120.0 / 255.0, 1);
   else
     OutColor = vec4(texc.xyz, 1); //vec4(DrawNormal.xyz / 10, Trans);
   if (Data[0] == 1)
-    OutColor = vec4(0, 0, 0, 1);
+  {
+    if (J0 == 1)
+      OutColor = vec4(1, 110.0 / 255.0, 120.0 / 255.0, 1);
+    else
+      OutColor = vec4(0, 0, 0, 1);
+  }
   //OutColor = vec4(DrawNormal.xyz, Trans);
   /*
   float start = 2.5, end = -0.61;

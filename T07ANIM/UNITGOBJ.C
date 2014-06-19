@@ -37,7 +37,7 @@ static VOID GObjUnitInit( my6UNIT_GOBJ *Unit, my6ANIM *Ani )
   memset(&Unit->Road, 0, sizeof(my6GEOM));
   memset(&Unit->Car, 0, sizeof(my6GEOM));
 
-  MY6_GeomLoad(&Unit->Car, "e:\\Models\\x6\\x6.object");
+  MY6_GeomLoad(&Unit->Car, "x6.object");
   MY6_GeomTransform(&Unit->Car, MatrRotateX(-90));
   MY6_GeomTransform(&Unit->Car, MatrRotateY(180));
   MY6_GeomTransform(&Unit->Car, MatrTranslate(2.7, 0.87, 0));

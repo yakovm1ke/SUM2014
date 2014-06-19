@@ -28,6 +28,7 @@ typedef struct tagmy6UNIT_INFO
  */
 static VOID InfoUnitInit( my6UNIT_INFO *Unit, my6ANIM *Ani )
 {
+  wglUseFontBitmaps(Ani->hDC, 0, 256, 111);
 } /* End of 'InfoUnitInit' function */
 
 /* Функция деинициализации информационного объекта анимации.
@@ -71,23 +72,28 @@ static VOID InfoUnitResponse( my6UNIT_INFO *Unit, my6ANIM *Ani )
  */
 static VOID InfoUnitRender( my6UNIT_INFO *Unit, my6ANIM *Ani )
 {
-  /*static CHAR Buf[1000];
+  static CHAR Buf[30];
 
-  sprintf(Buf, "FPS: %.3f", Ani->FPS);
-  SetWindowText(Ani->hWnd, Buf);
-  */
-  /*glBegin(GL_LINES);
-    glColor3d(1, 0, 0);
-    glVertex3d(0, 0, 0);
-    glVertex4d(1, 0, 0, 0);
-    glColor3d(0, 1, 0);
-    glVertex3d(0, 0, 0);
-    glVertex4d(0, 1, 0, 0);
-    glColor3d(0, 0, 1);
-    glVertex3d(0, 0, 0);
-    glVertex4d(0, 0, 1, 0);
-  glEnd();
-  */
+  glPushAttrib(GL_ALL_ATTRIB_BITS);
+  glDisable(GL_DEPTH_TEST);
+
+  Ani->MatrWorld = MatrIdentity();
+  glLoadMatrixf(Ani->MatrWorld.A[0]);
+
+
+  glColor3d(0, 0, 0);
+  glRasterPos3d(-0.988, 0.948, 0); 
+  glListBase(111);
+
+  glCallLists(sprintf(Buf, "FPS: %.3f", Ani->FPS), GL_UNSIGNED_BYTE, Buf);
+
+  glColor3d(1, 0.5, 1);
+  glRasterPos3d(-0.99, 0.95, 0); 
+  glListBase(111);
+
+  glCallLists(sprintf(Buf, "FPS: %.3f", Ani->FPS), GL_UNSIGNED_BYTE, Buf);
+
+  glPopAttrib();
 } /* End of 'InfoUnitRender' function */
 
 /* Функция создания информационного объекта анимации.

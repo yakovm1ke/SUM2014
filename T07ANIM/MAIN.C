@@ -42,7 +42,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
   wc.cbWndExtra = 0; /* Дополнительное количество байт для окна */
   wc.hbrBackground = (HBRUSH)COLOR_WINDOW; /* Фоновый цвет - выбранный в системе */
   wc.hCursor = LoadCursor(NULL, IDC_HAND);
-  wc.hIcon = LoadIcon(NULL, IDI_ERROR);
+  wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
   wc.lpszMenuName = NULL;
   wc.hInstance = hInstance;
   wc.lpfnWndProc = MainWindowFunc;
@@ -56,7 +56,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
   }
 
   /* Создание окна */
-  hWnd = CreateWindow(WND_CLASS_NAME, "First Window Sample",
+  hWnd = CreateWindow(WND_CLASS_NAME, "Ultra Proffesional Real Simulator Car Game",
     WS_OVERLAPPEDWINDOW,
     1920, 0,                      /* Позиция окна (x, y) - по умолчанию */
     1280, 1024,                   /* Размеры окна (w, h) - по умолчанию */
@@ -69,8 +69,8 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
   UpdateWindow(hWnd);
 
   /*** Добавление объектов ***/
-  MY6_AnimAddUnit(MY6_InfoUnitCreate());
   MY6_AnimAddUnit(MY6_GObjUnitCreate());
+  MY6_AnimAddUnit(MY6_InfoUnitCreate());
 
   /* Запуск цикла обработки сообщений */
   while(TRUE)
