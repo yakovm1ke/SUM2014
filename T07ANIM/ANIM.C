@@ -305,6 +305,16 @@ VOID MY6_AnimResponse( VOID )
 {
   INT i;
 
+  /*** Обновление ввода ***/
+  /* Клавиатура */
+  GetKeyboardState(MY6_Anim.Keys);
+  for (i = 0; i < 256; i++)
+    MY6_Anim.Keys[i] >>= 7;
+  for (i = 0; i < 256; i++)
+    MY6_Anim.KeysClick[i] = MY6_Anim.Keys[i] && !MY6_Anim.KeysOld[i];
+  memcpy(MY6_Anim.KeysOld, MY6_Anim.Keys, 256);
+
+  /* Джойстик */
   if ((i = joyGetNumDevs()) > 0)
   {
     JOYCAPS jc;

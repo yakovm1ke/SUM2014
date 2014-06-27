@@ -87,7 +87,8 @@ static VOID GObjUnitRender( my6UNIT_GOBJ *Unit, my6ANIM *Ani )
   INT loc;
   static INT ShadProgId;
   static DBL rotatey, rotatex, scale, tr, time, full_shift = 0, vert_shift, hor_shift = 0, v = 0;
-  DBL rot = 0;
+  static DBL rot1 = 0;
+  static DBL rot = 0;
 
   rotatey += Ani->JX * 4;
   rotatex += Ani->JY * 4;
@@ -95,14 +96,74 @@ static VOID GObjUnitRender( my6UNIT_GOBJ *Unit, my6ANIM *Ani )
 
   vert_shift += (Ani->JPOV == 1) * Ani->DeltaTime * 10.0 - (Ani->JPOV == 5) * Ani->DeltaTime * 10.0;
   hor_shift += Ani->JX * Ani->DeltaTime * 6.0;
+  hor_shift += Ani->Keys['D'] * Ani->DeltaTime * 6.0;
+  hor_shift -= Ani->Keys['A'] * Ani->DeltaTime * 6.0;
 
-  if(Ani->JX != 0)
+  if(v > 0)
   {
-    if(v > 0)
-      rot = Ani->JX * 6;
-    else
-      rot = -Ani->JX * 6;
+    rot = Ani->JX * 6;
+    if(Ani->Keys['D'])
+    {
+      rot1 += 6;
+      if(rot1 > 500)
+        rot1 = 500;
+    }
+
+    if(Ani->Keys['A'])
+    {
+      rot1 -= 6;
+      if(rot1 < -500)
+        rot1 = -500;
+    }
+    rot += rot1 * Ani->DeltaTime;
   }
+  else
+  {
+    rot = -Ani->JX * 6;
+    if(Ani->Keys['D'])
+    {
+      rot1 -= 6;
+      if(rot1 < -500)
+        rot1 = -500;
+    }
+
+    if(Ani->Keys['A'])
+    {
+      rot1 += 6;
+      if(rot1 > 500)
+        rot1 = 500;
+    }
+    rot += rot1 * Ani->DeltaTime;
+  }
+  /*if((Ani->Keys['A'] && Ani->Keys['D']) || ((Ani->Keys['D'] == 0) && (Ani->Keys['A'] == 0)))
+  {
+    if(rot1 == 0)
+      rot = 0;
+    while(rot1 != 0)
+    {
+      if(rot1 > 0)
+        rot1 -= 6;
+      else
+        rot1 += 6;
+    }
+    rot += rot1 * Ani->DeltaTime;
+  }*/
+
+  /*if(Ani->Keys['A'] && Ani->Keys['D'])
+  {
+    if(rot1 > 0)
+    {
+      while (rot1 != 0)
+        rot1 -= 6;
+      rot = rot1 * Ani->DeltaTime;
+    }
+    else
+    {
+      while (rot1 != 0)
+        rot1 -= 6;
+      rot = rot1 * Ani->DeltaTime;
+    }
+  }*/
 
   if(vert_shift < -4)
     vert_shift = -4;
@@ -110,7 +171,7 @@ static VOID GObjUnitRender( my6UNIT_GOBJ *Unit, my6ANIM *Ani )
     vert_shift = 10;
 
 
-  Ani->MatrView = MatrViewLookAt(VecSet(2.7, 5 + vert_shift, 30), VecSet(2.7, 1, 0), VecSet(0, 1, 0));
+  Ani->MatrView = MatrViewLookAt(VecSet(2.7, 3.5 + vert_shift, 30), VecSet(2.7, 1, 0), VecSet(0, 1, 0));
 
   Ani->MatrProjection = MatrProjection(-Ani->Wp / 2, Ani->Wp / 2,
                                        -Ani->Hp / 2, Ani->Hp / 2,
@@ -150,8 +211,10 @@ static VOID GObjUnitRender( my6UNIT_GOBJ *Unit, my6ANIM *Ani )
 
   /* Draw road */
   v += Ani->JZ * 0.01;
+  v -= Ani->Keys['W'] * 0.01;
+  v += Ani->Keys['S'] * 0.01;
   full_shift += v * Ani->DeltaTime;
-  if(Ani->JButsClick[7])
+  if(Ani->JButsClick[7] || Ani->Keys[' '])
     v = 0;
   if(v < -0.8)
     v = -0.8;
@@ -162,7 +225,11 @@ static VOID GObjUnitRender( my6UNIT_GOBJ *Unit, my6ANIM *Ani )
   if(hor_shift < -15)
     hor_shift = -15;
   if (v == 0)
+  {
     hor_shift -= Ani->JX * Ani->DeltaTime * 6.0;
+    hor_shift -= Ani->Keys['D'] * Ani->DeltaTime * 6.0;
+    hor_shift += Ani->Keys['A'] * Ani->DeltaTime * 6.0;
+  }
 
   Ani->MatrWorld = MatrMulMatr(MatrRotateX(-full_shift), MatrTranslate(-hor_shift, -RoadR, 0));
   MY6_GeomDraw(&Unit->Road);
